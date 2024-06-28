@@ -1,0 +1,35 @@
+camper: /guessing_game$ ./number_guess.sh 
+Enter your username:
+bill
+Welcome, bill! It looks like this is your first time here.
+Guess the secret number between 1 and 1000:
+500
+It's lower than that, guess again:
+400
+It's lower than that, guess again:
+300
+It's higher than that, guess again:
+250
+It's higher than that, guess again:
+275
+It's higher than that, guess again:
+285
+It's higher than that, guess again:
+290
+It's higher than that, guess again:
+300
+It's higher than that, guess again:
+350
+It's higher than that, guess again:
+400
+It's lower than that, guess again:
+375
+It's lower than that, guess again:
+360
+It's higher than that, guess again:
+365
+It's lower than that, guess again:
+363
+It's lower than that, guess again:
+362
+You guessed it in 15 tries. The secret number was 362. Nice job!

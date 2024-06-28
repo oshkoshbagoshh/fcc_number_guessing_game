@@ -1,0 +1,162 @@
+Here's a step-by-step guide to help you complete this project:
+
+Step-by-Step Instructions
+1. Create the number_guessing_game Folder
+Copy
+mkdir number_guessing_game
+cd number_guessing_game
+2. Create number_guess.sh and Make it Executable
+Copy
+touch number_guess.sh
+chmod +x number_guess.sh
+3. Add Shebang to number_guess.sh
+Open number_guess.sh in your favorite text editor and add the following line at the top:
+
+Copy
+#!/bin/bash
+4. Initialize a Git Repository
+Copy
+git init
+5. Create the Database
+Connect to the PostgreSQL shell and create the number_guess database:
+
+Copy
+psql --username=freecodecamp --dbname=postgres
+Then run the following SQL commands:
+
+Copy
+CREATE DATABASE number_guess;
+\c number_guess
+CREATE TABLE users(
+  user_id SERIAL PRIMARY KEY,
+  username VARCHAR(22) UNIQUE NOT NULL,
+  games_played INT NOT NULL,
+  best_game INT
+);
+Exit the PostgreSQL shell:
+
+Copy
+\q
+6. Write the Script
+Edit number_guess.sh to include the following script:
+
+Copy
+#!/bin/bash
+
+PSQL="psql --username=freecodecamp --dbname=number_guess -t --no-align -c"
+
+echo "Enter your username:"
+read USERNAME
+
+USER_DATA=$($PSQL "SELECT user_id, games_played, best_game FROM users WHERE username='$USERNAME'")
+
+if [[ -z $USER_DATA ]]; then
+  echo "Welcome, $USERNAME! It looks like this is your first time here."
+  INSERT_USER_RESULT=$($PSQL "INSERT INTO users(username, games_played) VALUES('$USERNAME', 0)")
+  USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME'")
+else
+  echo "$USER_DATA" | while IFS="|" read USER_ID GAMES_PLAYED BEST_GAME; do
+    echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
+  done
+fi
+
+SECRET_NUMBER=$(( RANDOM % 1000 + 1 ))
+GUESSES=0
+
+echo "Guess the secret number between 1 and 1000:"
+
+while true; do
+  read GUESS
+  ((GUESSES++))
+
+  if ! [[ $GUESS =~ ^[0-9]+$ ]]; then
+    echo "That is not an integer, guess again:"
+  elif (( GUESS < SECRET_NUMBER )); then
+    echo "It's higher than that, guess again:"
+  elif (( GUESS > SECRET_NUMBER )); then
+    echo "It's lower than that, guess again:"
+  else
+    echo "You guessed it in $GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!"
+    break
+  fi
+done
+
+if [[ -z $USER_DATA ]]; then
+  UPDATE_USER_RESULT=$($PSQL "UPDATE users SET games_played=1, best_game=$GUESSES WHERE user_id=$USER_ID")
+else
+  echo "$USER_DATA" | while IFS="|" read USER_ID GAMES_PLAYED BEST_GAME; do
+    NEW_GAMES_PLAYED=$(( GAMES_PLAYED + 1 ))
+    if [[ -z $BEST_GAME || $GUESSES -lt $BEST_GAME ]]; then
+      UPDATE_USER_RESULT=$($PSQL "UPDATE users SET games_played=$NEW_GAMES_PLAYED, best_game=$GUESSES WHERE user_id=$USER_ID")
+    else
+      UPDATE_USER_RESULT=$($PSQL "UPDATE users SET games_played=$NEW_GAMES_PLAYED WHERE user_id=$USER_ID")
+    fi
+  done
+fi
+7. Make Initial Commit
+Copy
+git add number_guess.sh
+git commit -m "Initial commit"
+8. Continue Development and Make Additional Commits
+As you develop and test your script, make additional commits with appropriate messages:
+
+Copy
+git add number_guess.sh
+git commit -m "feat: Add user input handling for guessing game"
+9. Save Database Dump
+Once your script is complete and all tests pass, save a dump of your database:
+
+Copy
+pg_dump -cC --inserts -U freecodecamp number_guess > number_guess.sql
+10. Save Files to a Public Repository
+Save both number_guess.sh and number_guess.sql to a public repository on GitHub or another platform.
+
+11. Submit the URL
+Submit the URL of your public repository on freeCodeCamp.org.
+
+Additional Tips
+Test your script thoroughly to ensure it meets all user stories.
+Make sure to handle edge cases, such as invalid input.
+Keep your working directory clean and commit changes frequently.
+If you need any further assistance, feel free to ask!
+
+Yes, you need to push your local Git repository to a new GitHub repository. Here are the steps to do that:
+
+### 1. Create a New Repository on GitHub
+1. Go to [GitHub](https://github.com/) and log in.
+2. Click on the "+" icon in the top-right corner and select "New repository".
+3. Fill in the repository name (e.g., `number_guessing_game`), description, and choose whether it will be public or private.
+4. Click "Create repository".
+
+### 2. Push Your Local Repository to GitHub
+In your terminal, navigate to your project directory and follow these steps:
+
+#### 2.1. Add the Remote Repository
+Replace `YOUR_GITHUB_USERNAME` and `REPOSITORY_NAME` with your GitHub username and the name of the repository you just created.
+
+```bash
+git remote add origin https://github.com/YOUR_GITHUB_USERNAME/REPOSITORY_NAME.git
+```
+
+#### 2.2. Push the Repository
+```bash
+git branch -M main
+git push -u origin main
+```
+
+### Example
+Here’s a full example assuming your GitHub username is `johndoe` and your repository name is `number_guessing_game`:
+
+```bash
+git remote add origin https://github.com/johndoe/number_guessing_game.git
+git branch -M main
+git push -u origin main
+```
+
+### 3. Verify on GitHub
+Go back to your GitHub repository page and refresh it. You should see all your files and commits there.
+
+### 4. Submit the URL
+Copy the URL of your GitHub repository and submit it on freeCodeCamp.org as required.
+
+If you encounter any issues or need further assistance, feel free to ask!
